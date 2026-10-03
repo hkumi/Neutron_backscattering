@@ -1,4 +1,0 @@
-/home/harriet/Geant4/neutron_example/Neutron_backscattered/build/CMakeFiles/rebuild_cache.dir
-/home/harriet/Geant4/neutron_example/Neutron_backscattered/build/CMakeFiles/Simulation.dir
-/home/harriet/Geant4/neutron_example/Neutron_backscattered/build/CMakeFiles/edit_cache.dir
-/home/harriet/Geant4/neutron_example/Neutron_backscattered/build/CMakeFiles/sim.dir

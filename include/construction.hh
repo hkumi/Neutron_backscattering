@@ -72,6 +72,14 @@ private:
      void DefineMaterials();
      virtual void ConstructSDandField();
      G4GenericMessenger *fMessenger;
+
+     // wall settings, can be changed from a macro BEFORE /run/initialize:
+     //   /wall/rockThickness 0.3 m
+     //   /wall/waterThickness 0.5 m
+     //   /wall/withWater true
+     G4double fRockThickness;
+     G4double fWaterThickness;
+     G4bool   fWithWater;
      G4bool isPPAC, isScintillator;   
 };
 

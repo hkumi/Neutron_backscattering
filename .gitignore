@@ -1,0 +1,4 @@
+build/
+*.root
+logs/
+sweep_tmp.mac

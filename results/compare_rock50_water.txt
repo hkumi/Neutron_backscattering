@@ -1,0 +1,11 @@
+A = rock50_only.root
+B = rock50_water.root
+Primaries per run = 1000000
+
+Backscattered neutrons per primary
+ALL energies                  A: 0.45153   B: 0.45463   B-A: +0.00310 +/- 0.00095   (3.3 sigma)
+Thermal    (< 0.5 eV)         A: 0.01738   B: 0.01914   B-A: +0.00176 +/- 0.00019   (9.2 sigma)
+Epithermal (0.5 eV-100 keV)   A: 0.13083   B: 0.13203   B-A: +0.00120 +/- 0.00051   (2.3 sigma)
+Fast       (> 100 keV)        A: 0.30332   B: 0.30346   B-A: +0.00014 +/- 0.00078   (0.2 sigma)
+
+(a difference is only real if it is bigger than about 3 sigma)

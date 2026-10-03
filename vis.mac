@@ -1,13 +1,32 @@
+# build the geometry and physics first
 /run/initialize
-/vis/open OGL
-/vis/viewer/set/viewpointVector 1 1 1
-/vis/drawVolume
-/vis/viewer/set/autoRefresh true
-/vis/scene/add/trajectories smooth
-#/vis/scene/add/scale 10 cm
-#/vis/scene/add/axes
-/vis/scene/add/eventID
-/vis/scene/endOfEventAction accumulate 1000000000
-#/gun/particle neutron
-/vis/ogl/set/displayListLimit 1000000000
 
+# open the viewer and draw the geometry
+/vis/open OGL
+/vis/drawVolume
+
+# hide the world box so you only see the rock, water and scorers
+/vis/geometry/set/visibility World 0 false
+
+# side view: beam goes from left to right
+/vis/viewer/set/viewpointThetaPhi 90 0 deg
+/vis/viewer/set/upVector 0 1 0
+/vis/viewer/set/style wireframe
+
+# axes at the origin (front face of the rock), 1 m long
+/vis/scene/add/axes 0 0 0 1 m
+
+# show neutron tracks and keep all events on screen
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set neutron yellow
+/vis/scene/endOfEventAction accumulate
+
+# the neutron source: 14 MeV, 10 cm in front of the rock, pointing at it
+/gps/particle neutron
+/gps/energy 14 MeV
+/gps/pos/type Point
+/gps/pos/centre 0 0 -10 cm
+/gps/direction 0 0 1
+
+# to see some neutrons, type in the window:  /run/beamOn 20

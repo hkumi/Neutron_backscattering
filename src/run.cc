@@ -1,42 +1,36 @@
 #include "run.hh"
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
+#include <cmath>
+
 MyRunAction::MyRunAction()
 {
-    G4AnalysisManager *man = G4AnalysisManager::Instance();
-    man->SetNtupleMerging(true);
-    man->SetVerboseLevel( 1 );
-    man->CreateNtuple("Photons", "Photons");
-    man->CreateNtupleDColumn("Energy");
-    man->FinishNtuple(0);
+  G4AnalysisManager *man = G4AnalysisManager::Instance();
+  man->SetNtupleMerging(true);
+  man->SetVerboseLevel(1);
 
-    // Set axis titles
+  // Energy spectra in MeV, with log-spaced bins from 1e-10 MeV (0.1 meV) to 30 MeV
+  // (draw in ROOT with a log x axis to see thermal and fast neutrons together)
+  man->CreateH1("Eback",  "Backscattered neutrons;Energy (MeV);counts",
+                115, 1.e-10, 30., "none", "none", "log");                        // H1 id 0
+  man->CreateH1("Etrans", "Transmitted neutrons;Energy (MeV);counts",
+                115, 1.e-10, 30., "none", "none", "log");                        // H1 id 1
 
-    man->CreateNtuple("Scoring", "Scoring");
-    man->CreateNtupleDColumn("BackscatteredEnergy");
-    man->FinishNtuple(1);
-    man->CreateNtuple("backscatteredtracklength", "backscatteredtracklength");
-    man->CreateNtupleDColumn("BackscatteringTracklength");
-    man->FinishNtuple(2);
-
-    man->CreateNtuple("Scoring_1", "Scoring_1");
-    man->CreateNtupleDColumn("TransmittedEnergy");
-    man->FinishNtuple(3);
-    man->CreateNtuple("transmittedtracklength", "transmittedtracklength");
-    man->CreateNtupleDColumn("TransmittedTracklength");
-    man->FinishNtuple(4);
-
-
-    //man->CreateH2("xy1 ","xy1", 100, -3, 3, 100, -3, 3.0);
-
-    //man->CreateH2("a1 ","angle vs energy_1", 100, 0, 100, 100, 0, 100.0);
-
-    //man->CreateH1("z1 ","z1", 100,-100 , 100);
-
-
-
-
-
+  // One ntuple per scorer, all quantities of the same neutron in one row
+  const char* names[2] = {"Backscattered", "Transmitted"};               // ntuple id 0, 1
+  for (G4int i = 0; i < 2; ++i) {
+    man->CreateNtuple(names[i], names[i]);
+    man->CreateNtupleDColumn("Energy_MeV");
+    man->CreateNtupleDColumn("CosTheta");
+    man->CreateNtupleDColumn("x_cm");
+    man->CreateNtupleDColumn("y_cm");
+    man->CreateNtupleDColumn("TrackLength_m");
+    man->CreateNtupleDColumn("Time_ns");
+    man->CreateNtupleIColumn("EventID");
+    man->CreateNtupleIColumn("TrackID");
+    man->CreateNtupleIColumn("ParentID");
+    man->FinishNtuple();
+  }
 }
 
 MyRunAction::~MyRunAction()
@@ -44,21 +38,30 @@ MyRunAction::~MyRunAction()
 
 void MyRunAction::BeginOfRunAction(const G4Run* run)
 {
-
-     
-    G4AnalysisManager *man = G4AnalysisManager::Instance();
-
-    G4int runID = run->GetRunID();
-
-    std::stringstream strRunID;
-    strRunID << runID;
-
-    man->OpenFile("output"+strRunID.str()+".root");
+  G4AnalysisManager *man = G4AnalysisManager::Instance();
+  std::stringstream strRunID;
+  strRunID << run->GetRunID();
+  man->OpenFile("output" + strRunID.str() + ".root");
 }
-void MyRunAction::EndOfRunAction(const G4Run*)
-{
-    G4AnalysisManager *man = G4AnalysisManager::Instance();
 
-    man->Write();
-    man->CloseFile();
+void MyRunAction::EndOfRunAction(const G4Run* run)
+{
+  G4AnalysisManager *man = G4AnalysisManager::Instance();
+  man->Write();
+
+  if (isMaster) {
+    G4int N = run->GetNumberOfEvent();
+    if (N > 0) {
+      G4double nBack  = man->GetH1(0)->entries();
+      G4double nTrans = man->GetH1(1)->entries();
+      G4cout << "\n========== RESULTS ==========\n"
+             << " Primary neutrons    : " << N << "\n"
+             << " Backscattered       : " << nBack  << "  -> "
+             << nBack/N  << " +/- " << std::sqrt(nBack)/N  << " per primary\n"
+             << " Transmitted         : " << nTrans << "  -> "
+             << nTrans/N << " +/- " << std::sqrt(nTrans)/N << " per primary\n"
+             << "=============================\n" << G4endl;
+    }
+  }
+  man->CloseFile();
 }

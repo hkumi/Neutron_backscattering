@@ -1,0 +1,4 @@
+Average track length (m)          A: rock50_only         B: rock50_water
+Backscattered, all energies         1.26 m (  451527 n)      1.28 m (  454628 n)
+Backscattered, thermal              5.18 m (   17383 n)      5.20 m (   19142 n)
+Transmitted, all energies           2.01 m (  144707 n)      1.16 m (     506 n)
